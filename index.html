@@ -785,7 +785,8 @@
 //  图片放在 images/ 目录下
 //  ============================================================
 
-const PAGE_SIZE = 20;   // 每页显示多少张（改这个数字即可）
+const PAGE_SIZE = 20;        // 每页显示多少张（改这个数字即可）
+const NEWEST_FIRST = true;   // true = 新图排在前面（倒序显示）；false = 按 IMAGE_LIST 原顺序
 
 const IMAGE_LIST = [
   { file: "anime_00001_.webp", tag: "人物", caption: "银发少女 · 樱花树下" },
@@ -932,11 +933,17 @@ const IMAGE_LIST = [
 
   const totalPages = () => Math.max(1, Math.ceil(filteredImages.length / PAGE_SIZE));
 
+  // --- 显示顺序 ---
+  // IMAGE_LIST 由 generate-config.py 按文件名升序生成（= 生成先后），这里只在渲染时倒序，
+  // 好处是数据文件本身保持稳定的升序，diff 干净；想切回旧图在前把 NEWEST_FIRST 改成 false
+  const displayList = () => NEWEST_FIRST ? IMAGE_LIST.slice().reverse() : IMAGE_LIST;
+
   // --- 切换分类：回到第 1 页 ---
   function applyFilter() {
+    const source = displayList();
     filteredImages = currentFilter === 'all'
-      ? IMAGE_LIST
-      : IMAGE_LIST.filter(img => img.tag === currentFilter);
+      ? source
+      : source.filter(img => img.tag === currentFilter);
     currentPage = 1;
     renderGallery();
   }
@@ -1174,7 +1181,7 @@ const IMAGE_LIST = [
 
   // --- 随机看一张（在当前分类范围内随机）---
   document.getElementById('randomBtn').addEventListener('click', () => {
-    const pool = filteredImages.length ? filteredImages : IMAGE_LIST;
+    const pool = filteredImages.length ? filteredImages : displayList();
     if (!pool.length) return;
     openLightbox(Math.floor(Math.random() * pool.length));
   });
