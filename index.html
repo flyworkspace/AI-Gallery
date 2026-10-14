@@ -470,8 +470,12 @@
     background: rgba(5,5,12,0.95);
     backdrop-filter: blur(20px);
     display: flex;
+    flex-direction: column;   /* 图片与说明竖排：说明回到正常流，图片再高也压不到它 */
     align-items: center;
     justify-content: center;
+    gap: 14px;
+    /* 上留关闭按钮、下留计数器 */
+    padding: 76px 0 74px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -484,20 +488,22 @@
 
   .lightbox-img-wrap {
     position: relative;
-    max-width: 90vw;
-    max-height: 85vh;
+    flex: 0 1 auto;
+    min-height: 0;            /* 允许收缩，否则会把说明文字顶出屏幕 */
     display: flex;
     align-items: center;
     justify-content: center;
+    max-width: 90vw;
+    /* 可用高度 = 视口 - 上下 padding(76+74) - 间距(14) - 说明文字余量 */
+    max-height: calc(100vh - 196px);
   }
 
   .lightbox-img-wrap img {
     max-width: 90vw;
-    max-height: 85vh;
+    max-height: calc(100vh - 196px);
     object-fit: contain;
     border-radius: var(--radius);
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    transition: transform 0.3s ease;
   }
 
   .lightbox-close {
@@ -558,6 +564,10 @@
     .lightbox-prev { left: 8px; }
     .lightbox-next { right: 8px; }
     .lightbox-close { top: 10px; right: 10px; width: 36px; height: 36px; font-size: 16px; }
+    /* 小屏留白收紧，并给可能折成两行的说明文字留余量 */
+    .lightbox { padding: 60px 0 64px; gap: 10px; }
+    .lightbox-img-wrap,
+    .lightbox-img-wrap img { max-height: calc(100vh - 190px); }
   }
 
   .lightbox-counter {
@@ -575,15 +585,16 @@
   }
 
   .lightbox-caption {
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    /* 回到正常文档流：不再绝对定位，图片多高都不会压到它 */
+    position: static;
+    flex: 0 0 auto;
     color: var(--text);
     font-size: 14px;
+    line-height: 1.5;
     text-align: center;
     z-index: 1001;
     max-width: 80vw;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
   }
 
   /* ===== Footer ===== */
@@ -1230,7 +1241,66 @@ const IMAGE_LIST = [
   { file: "anime_00440_.webp", tag: "战斗", caption: "重装坦克 · 沙漠突围" },
   { file: "anime_00441_.webp", tag: "战斗", caption: "冰晶巨龙 · 暴风雪袭" },
   { file: "anime_00442_.webp", tag: "战斗", caption: "虚空行者 · 星界裂隙" },
-  { file: "anime_00443_.webp", tag: "战斗", caption: "银发剑士 · 废墟神殿决战" },];
+  { file: "anime_00443_.webp", tag: "战斗", caption: "银发剑士 · 废墟神殿决战" },
+  { file: "anime_00444_.webp", tag: "人物", caption: "棕发女仆 · 红茶室" },
+  { file: "anime_00445_.webp", tag: "人物", caption: "金发黑客 · 赛博雨巷" },
+  { file: "anime_00446_.webp", tag: "人物", caption: "黑发刺客 · 雪原潜伏" },
+  { file: "anime_00447_.webp", tag: "人物", caption: "红发魔女 · 古堡书房" },
+  { file: "anime_00448_.webp", tag: "人物", caption: "蓝发机械师 · 车间检修" },
+  { file: "anime_00449_.webp", tag: "幻想", caption: "星界行者 · 浮空遗迹" },
+  { file: "anime_00450_.webp", tag: "幻想", caption: "深渊巨龙 · 水晶洞穴" },
+  { file: "anime_00451_.webp", tag: "幻想", caption: "森林精灵王 · 永恒之树" },
+  { file: "anime_00452_.webp", tag: "幻想", caption: "虚空行者 · 破碎维度" },
+  { file: "anime_00453_.webp", tag: "幻想", caption: "冰霜女巫 · 极光雪原" },
+  { file: "anime_00454_.webp", tag: "风景", caption: "春日溪涧 · 樱花倒影" },
+  { file: "anime_00455_.webp", tag: "风景", caption: "夏日海岸 · 灯塔守望" },
+  { file: "anime_00456_.webp", tag: "风景", caption: "秋日苔原 · 极光乍现" },
+  { file: "anime_00457_.webp", tag: "风景", caption: "冬日温泉 · 雪夜静谧" },
+  { file: "anime_00458_.webp", tag: "头像", caption: "银发姬 · 暖灯侧颜" },
+  { file: "anime_00459_.webp", tag: "头像", caption: "红发魔女 · 烟斗微光" },
+  { file: "anime_00460_.webp", tag: "头像", caption: "紫衣刺客 · 冷月孤影" },
+  { file: "anime_00461_.webp", tag: "机甲", caption: "赤红战甲 · 雪原突袭" },
+  { file: "anime_00462_.webp", tag: "机甲", caption: "蓝银重炮 · 峡谷封锁" },
+  { file: "anime_00463_.webp", tag: "机甲", caption: "重装堡垒 · 废土要塞" },
+  { file: "anime_00464_.webp", tag: "机甲", caption: "灵能剑刃 · 霓虹雨夜" },
+  { file: "anime_00465_.webp", tag: "动物", caption: "雪豹 · 冰川裂谷" },
+  { file: "anime_00466_.webp", tag: "动物", caption: "赤色螳螂 · 热带雨林" },
+  { file: "anime_00467_.webp", tag: "动物", caption: "冰晶水母 · 深海幽蓝" },
+  { file: "anime_00468_.webp", tag: "动物", caption: "雷霆雷鸟 · 火山边缘" },
+  { file: "anime_00469_.webp", tag: "服饰", caption: "绯红振袖 · 雪夜祭典" },
+  { file: "anime_00470_.webp", tag: "服饰", caption: "哥特洛丽塔 · 钟楼暮色" },
+  { file: "anime_00471_.webp", tag: "服饰", caption: "水手制服 · 海边微风" },
+  { file: "anime_00472_.webp", tag: "服饰", caption: "晚礼服 · 水晶吊灯" },
+  { file: "anime_00473_.webp", tag: "建筑", caption: "赛博巨塔 · 霓虹雨巷" },
+  { file: "anime_00474_.webp", tag: "建筑", caption: "和风神社 · 雪夜初霁" },
+  { file: "anime_00475_.webp", tag: "建筑", caption: "蒸汽工厂 · 烟囱林立" },
+  { file: "anime_00476_.webp", tag: "建筑", caption: "废弃教堂 · 藤蔓缠绕" },
+  { file: "anime_00477_.webp", tag: "美食", caption: "抹茶舒芙蕾 · 樱粉漩涡" },
+  { file: "anime_00478_.webp", tag: "美食", caption: "焦糖布丁 · 镜面光泽" },
+  { file: "anime_00479_.webp", tag: "美食", caption: "焦糖布丁 · 镜面光泽" },
+  { file: "anime_00480_.webp", tag: "战斗", caption: "机甲·峡谷决战" },
+  { file: "anime_00481_.webp", tag: "战斗", caption: "灵能剑刃·霓虹雨夜" },
+  { file: "anime_00482_.webp", tag: "战斗", caption: "虚空巨兽·破碎维度" },
+  { file: "anime_00483_.webp", tag: "人物", caption: "蓝发魔女 · 古堡塔楼" },
+  { file: "anime_00484_.webp", tag: "人物", caption: "棕发猎人 · 雪原营地" },
+  { file: "anime_00485_.webp", tag: "幻想", caption: "深渊熔炉 · 创世之火" },
+  { file: "anime_00486_.webp", tag: "幻想", caption: "星渊之舟 · 虚空航行" },
+  { file: "anime_00487_.webp", tag: "风景", caption: "青苔石桥 · 雨夜溪涧" },
+  { file: "anime_00488_.webp", tag: "风景", caption: "金黄麦田 · 微风拂面" },
+  { file: "anime_00489_.webp", tag: "头像", caption: "冰晶王冠少女 · 静谧雪原" },
+  { file: "anime_00490_.webp", tag: "头像", caption: "机械义眼少年 · 赛博雨夜" },
+  { file: "anime_00491_.webp", tag: "机甲", caption: "重装坦克 · 雪原要塞" },
+  { file: "anime_00492_.webp", tag: "机甲", caption: "悬浮战舰 · 星云航道" },
+  { file: "anime_00493_.webp", tag: "动物", caption: "雪豹 · 冰崖绝壁" },
+  { file: "anime_00494_.webp", tag: "动物", caption: "机械鲸鱼 · 深海遗迹" },
+  { file: "anime_00495_.webp", tag: "服饰", caption: "振袖和服 · 竹林幽径" },
+  { file: "anime_00496_.webp", tag: "服饰", caption: "哥特洛丽塔 · 哥特教堂" },
+  { file: "anime_00497_.webp", tag: "建筑", caption: "哥特教堂 · 雨夜洗礼" },
+  { file: "anime_00498_.webp", tag: "建筑", caption: "和风庭院 · 枯山水" },
+  { file: "anime_00499_.webp", tag: "美食", caption: "焦糖布丁 · 午后甜点" },
+  { file: "anime_00500_.webp", tag: "美食", caption: "铁板烧牛排 · 居酒屋" },
+  { file: "anime_00501_.webp", tag: "战斗", caption: "银刃刺客 · 霓虹雨巷" },
+  { file: "anime_00502_.webp", tag: "战斗", caption: "重装机甲 · 沙漠风暴" },];
 
 // ============================================================
 //  APP LOGIC — 无需修改
